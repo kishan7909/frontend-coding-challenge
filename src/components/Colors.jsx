@@ -1,14 +1,66 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import ColorItems from "./ColorItems";
+import RenderColors from "./RenderColors";
 
 const Colors = () => {
-  const rgbColours = createColours();
+  const [rbgColors, setRbgColors] = useState([]);
+  const [redColors, setRedColors] = useState([]);
+  const [greenColors, setGreenColors] = useState([]);
+  const [blueColors, setBlueColors] = useState([]);
 
-  function createColours() {
+  useEffect(() => {
+    generateColors();
+  }, []);
+
+  const rangeDivisibleByEight = (start, end) => {
+    let ans = [];
+    for (let i = start; i <= end; i++) {
+      if (i !== 0 && i % 8 === 0) {
+        ans.push(i);
+      }
+    }
+    return ans;
+  };
+
+  const shuffleColours = (array) => {
+    let currentIndex = array.length,
+      randomIndex;
+
+    while (currentIndex !== 0) {
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
+
+      [array[currentIndex], array[randomIndex]] = [
+        array[randomIndex],
+        array[currentIndex],
+      ];
+    }
+
+    return array;
+  };
+
+  const generateColors = () => {
     let red = rangeDivisibleByEight(8, 256);
     let green = rangeDivisibleByEight(8, 256);
     let blue = rangeDivisibleByEight(8, 256);
-    let allColours = [];
 
+    setRedColors(red);
+    setGreenColors(green);
+    setBlueColors(blue);
+
+    let allColors = createColors(red, green, blue);
+    setRbgColors(allColors);
+
+    console.info("----------------------------");
+    console.info("red length =>", red.length);
+    console.info("green length =>", green.length);
+    console.info("blue length =>", blue.length);
+    console.info("RGB length =>", allColors.length);
+    console.info("----------------------------");
+  };
+
+  const createColors = (red, green, blue) => {
+    let allColours = [];
     let i = 0;
     while (i < red.length) {
       const redRandomIndex = Math.floor(Math.random() * red.length);
@@ -36,59 +88,41 @@ const Colors = () => {
         }
       }
     }
-    console.log("length equals " + allColours.length);
 
     return shuffleColours(allColours);
-  }
-
-  function rangeDivisibleByEight(start, end) {
-    let ans = [];
-    for (let i = start; i <= end; i++) {
-      if (i !== 0 && i % 8 === 0) {
-        ans.push(i);
-      }
-    }
-    return ans;
-  }
-
-  function shuffleColours(array) {
-    let currentIndex = array.length,
-      randomIndex;
-
-    while (currentIndex !== 0) {
-      randomIndex = Math.floor(Math.random() * currentIndex);
-      currentIndex--;
-
-      [array[currentIndex], array[randomIndex]] = [
-        array[randomIndex],
-        array[currentIndex],
-      ];
-    }
-
-    return array;
-  }
+  };
 
   return (
-    <div
-      style={{
-        width: "80%",
-        position: "relative",
-        margin: "5% 10%",
-        display: "flex",
-        flexWrap: "wrap",
-      }}
-    >
-      {rgbColours.map((colour, index) => {
-        return (
-          <div
-            key={index}
-            id={index}
-            style={{ backgroundColor: colour }}
-            className="square button-img"
-          ></div>
-        );
-      })}
-    </div>
+    <>
+      <ColorItems>
+        <h3>Red</h3>
+        {redColors.map((colour, index) => {
+          const rgb = `rgb(${colour},0,0)`;
+          return <RenderColors key={index} rgb={rgb} />;
+        })}
+      </ColorItems>
+      <ColorItems>
+        <h3>Green</h3>
+        {greenColors.map((colour, index) => {
+          const green = `rgb(0,${colour},0)`;
+          return <RenderColors key={index} rgb={green} />;
+        })}
+      </ColorItems>
+      <ColorItems>
+        <h3>Blue</h3>
+        {blueColors.map((colour, index) => {
+          const blue = `rgb(0,0,${colour})`;
+          return <RenderColors key={index} rgb={blue} />;
+        })}
+      </ColorItems>
+
+      <ColorItems>
+        <h3>RGB Colors</h3>
+        {rbgColors.map((colour, index) => {
+          return <RenderColors key={index} rgb={colour} />;
+        })}
+      </ColorItems>
+    </>
   );
 };
 
